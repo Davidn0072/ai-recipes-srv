@@ -1,13 +1,11 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import './loadEnv.js';
 
 import express from 'express';
 import cors from 'cors';
 
+import { port } from './configs/config.js';
 import connectDB from './configs/db.js';
 import recipesRouter from './routers/recipesRouter.js';
-
-const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(cors());
@@ -15,7 +13,7 @@ app.use(express.json());
 
 app.use('/recipes', recipesRouter);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
     connectDB();
 });

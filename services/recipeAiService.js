@@ -1,6 +1,5 @@
 import { generateText } from 'ai';
-
-const DEFAULT_MODEL = 'anthropic/claude-sonnet-4.5';
+import { aiRecipeModel } from '../configs/config.js';
 
 function ingredientsToString(ingredients) {
   if (ingredients == null) return '';
@@ -29,7 +28,7 @@ function tryParseAiJson(text) {
  */
 export async function generateRecipeFromAi({ title, ingredients }) {
   const ingredientsStr = ingredientsToString(ingredients);
-  const model = process.env.AI_RECIPE_MODEL || DEFAULT_MODEL;
+  const model = aiRecipeModel;
 
   const prompt = `Write a short recipe for "${title}" using these ingredients: ${ingredientsStr}.
 Include in the response:

@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
+import { mongoUri } from './config.js';
 
 const connectDB = () => {
   mongoose
-    .connect('mongodb://localhost:27017/recipesDB')
-    .then(() => console.log('Connected to recipesDB'))
+    .connect(mongoUri)
+    .then(() => console.log('Connected to MongoDB'))
     .catch(console.error);
 };
 
