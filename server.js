@@ -1,7 +1,9 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+
+import connectDB from './configs/db.js';
+import recipesRouter from './routers/recipesRouter.js';
 
 const PORT = process.env.PORT || 3000;
 
@@ -9,10 +11,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.json({ message: 'Hello From Backend' });
-});
+app.use('/recipes', recipesRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    connectDB();
 });
