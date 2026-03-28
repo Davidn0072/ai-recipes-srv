@@ -1,18 +1,22 @@
 import Recipe from '../models/recipeModel.js';
+import connectToDatabase from '../configs/db.js';
 
 // Get All
-const getAllRecipes = (queries) => {
+const getAllRecipes = async (queries) => {
+  await connectToDatabase();
   return Recipe.find(queries);
 };
 
 // Get By ID
-const getRecipeById = (id) => {
+const getRecipeById = async (id) => {
+  await connectToDatabase();
   return Recipe.findById(id);
 };
 
 // Create
-const addRecipe = (obj) => {
+const addRecipe = async (obj) => {
   // Option 1
+  await connectToDatabase();
   return Recipe.create(obj);
   // // Option 2
   // const per = new Recipe(obj);
@@ -20,12 +24,14 @@ const addRecipe = (obj) => {
 };
 
 // Update
-const updateRecipe = (id, obj) => {
+const updateRecipe = async (id, obj) => {
+  await connectToDatabase();
   return Recipe.findByIdAndUpdate(id, obj);
 };
 
 // Delete
-const deleteRecipe = (id) => {
+const deleteRecipe = async (id) => {
+  await connectToDatabase();
   return Recipe.findByIdAndDelete(id);
 };
 
