@@ -4,7 +4,7 @@ import express from 'express';
 import cors from 'cors';
 
 import { port } from './configs/config.js';
-import connectDB from './configs/db.js';
+//import connectDB from './configs/db.js';  old way to connect to database
 import recipesRouter from './routers/recipesRouter.js';
 
 const app = express();
@@ -15,5 +15,5 @@ app.use('/recipes', recipesRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-    connectDB();
+    //  connectDB();// old way to connect to database
 });
