@@ -10,16 +10,29 @@ function ingredientsToString(ingredients) {
 }
 
 function tryParseAiJson(text) {
-  const trimmed = text.trim();
-  const unfenced = trimmed
+  let s = text.trim();
+  s = s
     .replace(/^```(?:json)?\s*/i, '')
     .replace(/\s*```$/i, '')
     .trim();
-  try {
-    return JSON.parse(unfenced);
-  } catch {
-    return null;
+
+  const attempt = (raw) => {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  };
+
+  let parsed = attempt(s);
+  if (parsed) return parsed;
+
+  const start = s.indexOf('{');
+  const end = s.lastIndexOf('}');
+  if (start >= 0 && end > start) {
+    parsed = attempt(s.slice(start, end + 1));
   }
+  return parsed;
 }
 
 /**
@@ -29,18 +42,19 @@ function tryParseAiJson(text) {
 export async function generateRecipeFromAi({ title, ingredients }) {
   const ingredientsStr = ingredientsToString(ingredients);
   const model = aiRecipeModel;
-
   const prompt = `Write a short recipe for "${title}" using these ingredients: ${ingredientsStr}.
-Include in the response:
-- Recipe (max ${aiRecipeMaxWords} words)
-- Difficulty level (easy, medium, hard)
-- Cooking time (in minutes)
-Format as JSON:
-{
-  "recipe": "...",
-  "difficulty": "...",
-  "cooking_time": "..."
-}`;
+
+Rules:
+1. The recipe text must not exceed ${aiRecipeMaxWords} words.
+2. Return these keys only:
+   - recipe: string, the cooking instructions (max ${aiRecipeMaxWords} words)
+   - difficulty: exactly one of easy, medium, hard
+   - cooking_time: number, minutes
+   - short_due_to_cost: the string "yes" if you shortened or cut the recipe to stay within the word limit, otherwise the string "no"
+3. Output one JSON object only. No markdown code fences, no prose before or after, no trailing commas, no comments.
+
+Valid example:
+{"recipe":"...","difficulty":"easy","cooking_time":25,"short_due_to_cost":"no"}`;
 
   const { text } = await generateText({
     model,
@@ -57,10 +71,16 @@ Format as JSON:
     const diff = String(parsed.difficulty ?? 'easy').toLowerCase();
     const difficulty = ['easy', 'medium', 'hard'].includes(diff) ? diff : 'easy';
 
+    const sdc = parsed.short_due_to_cost;
+    const shortDueToCost =
+      sdc === true ||
+      (typeof sdc === 'string' && sdc.trim().toLowerCase() === 'yes');
+
     return {
       recipe: String(parsed.recipe ?? text).trim(),
       difficulty,
       cooking_time: cookingNum,
+      short_due_to_cost: shortDueToCost ? 'yes' : 'no',
     };
   }
 
@@ -68,5 +88,6 @@ Format as JSON:
     recipe: text.trim(),
     difficulty: 'easy',
     cooking_time: 0,
+    short_due_to_cost: 'no',
   };
 }
