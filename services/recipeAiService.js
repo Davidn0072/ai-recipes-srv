@@ -1,5 +1,5 @@
 import { generateText } from 'ai';
-import { aiRecipeModel } from '../configs/config.js';
+import { aiRecipeModel, aiRecipeMaxWords } from '../configs/config.js';
 
 function ingredientsToString(ingredients) {
   if (ingredients == null) return '';
@@ -32,7 +32,7 @@ export async function generateRecipeFromAi({ title, ingredients }) {
 
   const prompt = `Write a short recipe for "${title}" using these ingredients: ${ingredientsStr}.
 Include in the response:
-- Recipe (max 20 words)
+- Recipe (max ${aiRecipeMaxWords} words)
 - Difficulty level (easy, medium, hard)
 - Cooking time (in minutes)
 Format as JSON:

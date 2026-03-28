@@ -7,6 +7,11 @@ const toPort = (value) => {
   return Number.isFinite(n) && n > 0 ? n : null;
 };
 
+const toPositiveIntOr = (value, fallback) => {
+  const n = parseInt(String(value ?? ''), 10);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+};
+
 /** `PORT` in .env */
 export const port = toPort(process.env.PORT) ?? 3000;
 
@@ -18,3 +23,6 @@ export const mongoUri =
 
 export const aiRecipeModel =
   process.env.AI_RECIPE_MODEL ?? 'anthropic/claude-sonnet-4.5';
+
+/** `AI_RECIPE_MAX_WORDS` in .env — cap for recipe text in the AI prompt (default 35). */
+export const aiRecipeMaxWords = toPositiveIntOr(process.env.AI_RECIPE_MAX_WORDS, 35);
